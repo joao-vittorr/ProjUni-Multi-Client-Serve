@@ -10,13 +10,13 @@ import java.util.HashMap;
 public class ThreadServer extends Thread {
 
     private Socket socket;
-    private ArrayList<Socket> clients;
-    private HashMap<Socket, String> clientNameList;
+    private ArrayList<Socket> user;
+    private HashMap<Socket, String> userNameList;
 
     public ThreadServer(Socket socket, ArrayList<Socket> clients, HashMap<Socket, String> clientNameList) {
         this.socket = socket;
-        this.clients = clients;
-        this.clientNameList = clientNameList;
+        this.user = clients;
+        this.userNameList = clientNameList;
     }
 
     @Override
@@ -29,9 +29,9 @@ public class ThreadServer extends Thread {
                 if (outputString.equals("logout")) {
                     throw new SocketException();
                 }
-                if (!clientNameList.containsKey(socket)) {
+                if (!userNameList.containsKey(socket)) {
                     String[] messageString = outputString.split(":", 2);
-                    clientNameList.put(socket, messageString[0]);
+                    userNameList.put(socket, messageString[0]);
                     System.out.println(messageString[0] + messageString[1]);
                     showMessageToAllClients(socket, messageString[0] + messageString[1]);
                 } else {
@@ -40,11 +40,11 @@ public class ThreadServer extends Thread {
                 }
             }
         } catch (SocketException e) {
-            String printMessage = clientNameList.get(socket) + " saiu do bate-papo";
+            String printMessage = userNameList.get(socket) + " saiu do bate-papo";
             System.out.println(printMessage);
             showMessageToAllClients(socket, printMessage);
-            clients.remove(socket);
-            clientNameList.remove(socket);
+            user.remove(socket);
+            userNameList.remove(socket);
         } catch (Exception e) {
             System.out.println(e.getStackTrace());
         }
@@ -54,8 +54,8 @@ public class ThreadServer extends Thread {
         Socket socket;
         PrintWriter printWriter;
         int i = 0;
-        while (i < clients.size()) {
-            socket = clients.get(i);
+        while (i < user.size()) {
+            socket = user.get(i);
             i++;
             try {
                 if (socket != sender) {
